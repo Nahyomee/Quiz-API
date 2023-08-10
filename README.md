@@ -29,7 +29,7 @@ No demo yet
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/Nahyomee/Quiz-API
 ```
 
 Go to the project directory
