@@ -44,4 +44,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /** Check if user is an admin */
+    public function isAdmin()  : bool
+    {
+        return $this->role == 'admin';
+    }
 }
