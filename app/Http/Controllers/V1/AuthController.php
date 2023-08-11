@@ -5,9 +5,11 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\V1\StoreUserRequest;
 use App\Http\Resources\V1\UserResource;
+use App\Mail\Welcome;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 
@@ -27,7 +29,9 @@ class AuthController extends BaseController
             $user->api_token = $token->plainTextToken;
             $user->save();
             //send verification email
-            $user->sendEmailVerificationNotification();
+            //$user->sendEmailVerificationNotification();
+            //send welcome mail
+            Mail::to($user->email)->send(new Welcome($user));
             return $this->sendResponse('Registration successful');
             return redirect()->away(env('FRONT_URL'));
 

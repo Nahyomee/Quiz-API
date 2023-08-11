@@ -49,4 +49,10 @@ Route::prefix('v1')->namespace('App\Http\Controllers\V1')->group(function(){
         });
         Route::post('/logout', 'logout')->middleware('auth:sanctum');
     });
+    Route::middleware('auth:sanctum')->group(function(){
+        Route::apiResources([
+            'categories' => CategoryController::class,
+            'quizzes' => QuizController::class,
+        ]);
+    });
 });
