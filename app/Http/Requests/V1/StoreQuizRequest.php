@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreQuizRequest extends FormRequest
 {
@@ -11,7 +13,9 @@ class StoreQuizRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        
+        $user = $this->user();
+        return $user != null ;
     }
 
     /**
@@ -22,7 +26,9 @@ class StoreQuizRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'category' => ['required', Rule::in(Category::pluck('id')->toArray())],
+            'title' => ['required', 'string', 'unique:quizzes,title'],
+            'description' =>  ['required', 'string']
         ];
     }
 }
