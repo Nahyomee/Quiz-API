@@ -4,9 +4,14 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\V1\StoreQuizRequest;
+use App\Http\Requests\V1\UpdateQuizRequest;
 use App\Http\Resources\V1\QuizCollection;
 use App\Http\Resources\V1\QuizResource;
+use App\Models\BlankQuestion;
+use App\Models\ChoiceQuestion;
+use App\Models\Question;
 use App\Models\Quiz;
+use App\Models\TrueFalseQuestion;
 use Illuminate\Http\Request;
 USE Illuminate\Support\Str;
 
@@ -26,7 +31,7 @@ class QuizController extends BaseController
      */
     public function index()
     {
-        return $this->sendResponse(new QuizCollection(Quiz::all()));
+        return $this->sendResponse(QuizResource::collection(Quiz::all()));
     
     }
 
@@ -55,14 +60,14 @@ class QuizController extends BaseController
      */
     public function show(Quiz $quiz)
     {
-        return $this->sendResponse(new QuizResource($quiz));
+        return $this->sendResponse(new QuizResource($quiz->loadCount('questions')));
         
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Quiz $quiz)
+    public function update(UpdateQuizRequest $request, Quiz $quiz)
     {
         try{
             $quiz->update($request->except('category'));
@@ -94,4 +99,6 @@ class QuizController extends BaseController
         }
         return $this->sendResponse(null, 'Quiz deleted successfully');
     }
+
+
 }

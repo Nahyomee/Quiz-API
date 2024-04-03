@@ -26,9 +26,9 @@ class UpdateQuizRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category' => ['required', Rule::in(Category::pluck('id')->toArray())],
-            'title' => ['required', 'string', Rule::unique('quizzes')->ignore($this->quiz)],
-            'description' => ['required', 'string']
+            'category' => ['sometimes', Rule::in(Category::pluck('id')->toArray())],
+            'title' => ['sometimes', 'string', Rule::unique('quizzes')->ignore($this->quiz)],
+            'description' => ['sometimes', 'string']
         ];
     }
 }

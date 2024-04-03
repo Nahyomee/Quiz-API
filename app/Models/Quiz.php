@@ -15,14 +15,6 @@ class Quiz extends Model
     protected $fillable = ['category_id', 'user_id', 'title', 'description', 'slug'];
 
     /**
-     * Get the value of the model's route key.
-     */
-    public function getRouteKeyName(): mixed
-    {
-        return 'slug';
-    }
-
-     /**
      * Relationship with question model
      */
     public function questions() : HasMany

@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('true_false_questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('question_id')->constrained('questions');
-            $table->string('answer');
-            $table->boolean('is_correct');
+            $table->text('question');
+            $table->enum('answer', ['true', 'false']);
             $table->timestamps();
         });
     }

@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\V1\QuestionController;
+use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\CategoryController;
+use App\Http\Controllers\V1\QuizController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Resources\V1\UserCollection;
-use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +56,7 @@ Route::prefix('v1')->namespace('App\Http\Controllers\V1')->group(function(){
         Route::apiResources([
             'categories' => CategoryController::class,
             'quizzes' => QuizController::class,
+            'quizzes.questions' => QuestionController::class
         ]);
     });
 });
