@@ -91,8 +91,17 @@ class QuizController extends BaseController
     public function destroy(Quiz $quiz)
     {
         try {
-            //delete questions first
-            $quiz->questions()->delete();
+            //delete questions 
+            $questions = $quiz->questions;
+            foreach ($questions as $question) {
+                //get the type  of question and delete
+                if($question->questionable instanceof ChoiceQuestion){
+                    $question->questionable->options()->delete();
+                }
+                $question->questionable->delete();
+                $question->delete();
+                //delete question
+            }
             $quiz->delete();
         } catch (\Throwable $th) {
             return $this->sendError('Error in deleting quiz.', $th->getMessage());

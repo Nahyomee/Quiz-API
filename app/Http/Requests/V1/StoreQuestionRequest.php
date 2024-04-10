@@ -28,7 +28,7 @@ class StoreQuestionRequest extends FormRequest
             'question' => ['string', 'required'],
             'answer' => ['string', 'required', function($attribute, $values, $fail){
                 if($this->type === 'true false'){
-                    if(!in_array($values, ['true', 'false'. 'True', 'False'])){
+                    if(!in_array(strtolower($values), ['true', 'false'])){
                         $fail('The answer should be either true or false');
                     }
                 }

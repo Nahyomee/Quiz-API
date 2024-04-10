@@ -31,6 +31,7 @@ class QuestionTypeResource extends JsonResource
             $type = 'fill in the blank';
         }
         return [
+            'id' => $this->id,
             'type' => $type,
             'question' => new QuestionResource($this->questionable),
             'options' => $this->when($this->questionable instanceof ChoiceQuestion,

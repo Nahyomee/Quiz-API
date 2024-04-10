@@ -3,6 +3,7 @@
 namespace App\Http\Requests\V1;
 
 use App\Models\Category;
+use App\Models\Quiz;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,8 +15,9 @@ class UpdateQuizRequest extends FormRequest
     public function authorize(): bool
     {
        
+        $quiz = $this->route('quiz');
         $user = $this->user();
-        return $user != null ;
+        return $quiz && $user->can('update', $quiz);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\V1\StoreQuestionRequest;
+use App\Http\Requests\V1\UpdateQuestionRequest;
 use App\Http\Resources\V1\QuestionResource;
 use App\Http\Resources\V1\QuestionTypeResource;
 use App\Http\Resources\V1\QuizResource;
@@ -17,20 +18,19 @@ use Illuminate\Http\Request;
 class QuestionController extends BaseController
 {
     /**
-     * Display a listing of the resource.
+     * Get all questions of a quiz
      */
-    public function index()
+    public function index(Quiz $quiz)
     {
-        //
+        return $this->sendResponse(QuestionTypeResource::collection($quiz->questions));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Add a question to a quiz.
      */
     public function store(StoreQuestionRequest $request, Quiz $quiz)
     {
         $this->authorize('update', $quiz);
-        //  dd($request->all());
           try{
               $quest = new Question;
               $quest->quiz_id = $quiz->id;
@@ -64,26 +64,52 @@ class QuestionController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show a question.
      */
-    public function show(string $id)
+    public function show(Quiz $quiz, Question $question)
     {
-        //
+        return $this->sendResponse(new QuestionTypeResource($question));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a question
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateQuestionRequest $request, Quiz $quiz, Question $question)
     {
-        //
+        $this->authorize('update', $quiz);
+        //only change the question and the answer
+        try {
+        
+            $quest = $question->questionable;
+            $quest->update($request->all());
+
+            return $this->sendResponse(new QuestionTypeResource($question), 'Question updated');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error updating question', $th->getMessage());
+
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete a question from a quiz.
      */
-    public function destroy(string $id)
+    public function destroy(Quiz $quiz, Question $question)
     {
-        //
+        $this->authorize('delete', $quiz);
+        try {
+            if($question->questionable instanceof ChoiceQuestion){
+                $question->questionable->options()->delete();
+            }
+            $question->questionable->delete();
+            if($question->delete()){
+                return $this->sendResponse(null, 'Question deleted');
+            }
+            return $this->sendError('Error deleting question');
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $this->sendError('Error deleting question', $th->getMessage());
+        }
+
     }
 }
