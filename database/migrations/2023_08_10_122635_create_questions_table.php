@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quiz_id')->constrained('quizzes');
             $table->morphs('questionable'); // Polymorphic relationship
-            $table->text('text');
             $table->timestamps();
         });
     }

@@ -1,12 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers\V1\Backend;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\V1\StoreQuizRequest;
+use App\Http\Requests\V1\UpdateQuizRequest;
 use App\Http\Resources\V1\QuizCollection;
 use App\Http\Resources\V1\QuizResource;
+use App\Models\BlankQuestion;
+use App\Models\ChoiceQuestion;
+use App\Models\Question;
 use App\Models\Quiz;
+use App\Models\TrueFalseQuestion;
 use Illuminate\Http\Request;
 USE Illuminate\Support\Str;
 
@@ -26,7 +31,7 @@ class QuizController extends BaseController
      */
     public function index()
     {
-        return $this->sendResponse(new QuizCollection(Quiz::all()));
+        return $this->sendResponse(QuizResource::collection(request()->user()->quizzes));
     
     }
 
@@ -55,14 +60,14 @@ class QuizController extends BaseController
      */
     public function show(Quiz $quiz)
     {
-        return $this->sendResponse(new QuizResource($quiz));
+        return $this->sendResponse(new QuizResource($quiz->load('questions')->loadCount('questions')));
         
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Quiz $quiz)
+    public function update(UpdateQuizRequest $request, Quiz $quiz)
     {
         try{
             $quiz->update($request->except('category'));
@@ -86,12 +91,57 @@ class QuizController extends BaseController
     public function destroy(Quiz $quiz)
     {
         try {
-            //delete questions first
-            $quiz->questions()->delete();
+            //delete questions 
+            $questions = $quiz->questions;
+            foreach ($questions as $question) {
+                //get the type  of question and delete
+                if($question->questionable instanceof ChoiceQuestion){
+                    $question->questionable->options()->delete();
+                }
+                $question->questionable->delete();
+                $question->delete();
+                //delete question
+            }
             $quiz->delete();
         } catch (\Throwable $th) {
             return $this->sendError('Error in deleting quiz.', $th->getMessage());
         }
         return $this->sendResponse(null, 'Quiz deleted successfully');
     }
+
+    /**
+     * Publish a quiz
+     */
+    public function publishQuiz(Request $request){
+        $quiz = Quiz::find($request->quiz);
+        $this->authorize('update', $quiz);
+        if($quiz->is_published){
+            return $this->sendError('Quiz already published!');
+        }
+        $quiz->is_published = 1;
+        if($quiz->save()){
+            return $this->sendResponse(new QuizResource($quiz), 'Quiz published!');
+        }else{
+            return $this->sendError('Error in publishing quiz!');
+        }
+    }
+
+     /**
+     * Unpublish a quiz
+     */
+    public function unpublishQuiz(Request $request){
+        $quiz = Quiz::find($request->quiz);
+        $this->authorize('update', $quiz);
+        if(!$quiz->is_published){
+            return $this->sendError('Quiz is already unpublished!');
+        }
+        $quiz->is_published = 0;
+        if($quiz->save()){
+            return $this->sendResponse(new QuizResource($quiz), 'Quiz unpublished!');
+        }else{
+            return $this->sendError('Error in unpublishing quiz!');
+        }
+    }
+
+
 }

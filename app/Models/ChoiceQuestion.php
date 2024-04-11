@@ -4,18 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class ChoiceQuestion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['question_id', 'answer', 'is_correct'];
+    protected $fillable = ['question', 'answer'];
     /**
      * Relationship with question moel
      */
-    public function question() : BelongsTo
+    public function questions() : MorphMany
     {
-        return $this->belongsTo(Question::class);
+        return $this->morphMany(Question::class, 'questionable');
+    }
+
+    public function options() : HasMany
+    {
+        return $this->hasMany(Option::class, 'choice_questions_id');
     }
 }

@@ -54,6 +54,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Quiz::class);
     }
 
+    /**
+     * Relationship with submissions model
+     */
+    public function submissions() : HasMany
+    {
+        return $this->hasMany(Submission::class);
+    }
+
     /** Check if user is an admin */
     public function isAdmin()  : bool
     {
