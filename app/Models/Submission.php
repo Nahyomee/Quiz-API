@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,7 +10,8 @@ class Submission extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'quiz_id', 'score'];
+    
+    protected $fillable = ['user_id', 'quiz_id', 'score', 'start', 'end'];
 
     public function user() {
         return $this->belongsTo(User::class);
@@ -19,12 +21,11 @@ class Submission extends Model
         return $this->belongsTo(Quiz::class);
     }
 
-    public function question() {
-        return $this->belongsTo(Question::class);
+    public function answers() {
+        return $this->hasMany(Answer::class);
     }
 
-    public function answers() {
-        return $this->belongsToMany(Answer::class, 'submission_answers')
-            ->withPivot('is_selected');
+    public function scopeCompleted(Builder $query) {
+        return $query->whereNotNull('end');
     }
 }

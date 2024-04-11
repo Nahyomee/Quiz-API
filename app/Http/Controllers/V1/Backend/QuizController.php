@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers\V1\Backend;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\V1\StoreQuizRequest;
@@ -31,7 +31,7 @@ class QuizController extends BaseController
      */
     public function index()
     {
-        return $this->sendResponse(QuizResource::collection(Quiz::all()));
+        return $this->sendResponse(QuizResource::collection(request()->user()->quizzes));
     
     }
 
@@ -60,7 +60,7 @@ class QuizController extends BaseController
      */
     public function show(Quiz $quiz)
     {
-        return $this->sendResponse(new QuizResource($quiz->loadCount('questions')));
+        return $this->sendResponse(new QuizResource($quiz->load('questions')->loadCount('questions')));
         
     }
 
@@ -107,6 +107,40 @@ class QuizController extends BaseController
             return $this->sendError('Error in deleting quiz.', $th->getMessage());
         }
         return $this->sendResponse(null, 'Quiz deleted successfully');
+    }
+
+    /**
+     * Publish a quiz
+     */
+    public function publishQuiz(Request $request){
+        $quiz = Quiz::find($request->quiz);
+        $this->authorize('update', $quiz);
+        if($quiz->is_published){
+            return $this->sendError('Quiz already published!');
+        }
+        $quiz->is_published = 1;
+        if($quiz->save()){
+            return $this->sendResponse(new QuizResource($quiz), 'Quiz published!');
+        }else{
+            return $this->sendError('Error in publishing quiz!');
+        }
+    }
+
+     /**
+     * Unpublish a quiz
+     */
+    public function unpublishQuiz(Request $request){
+        $quiz = Quiz::find($request->quiz);
+        $this->authorize('update', $quiz);
+        if(!$quiz->is_published){
+            return $this->sendError('Quiz is already unpublished!');
+        }
+        $quiz->is_published = 0;
+        if($quiz->save()){
+            return $this->sendResponse(new QuizResource($quiz), 'Quiz unpublished!');
+        }else{
+            return $this->sendError('Error in unpublishing quiz!');
+        }
     }
 
 

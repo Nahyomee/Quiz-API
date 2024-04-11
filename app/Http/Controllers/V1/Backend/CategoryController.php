@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers\V1\Backend;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\V1\CategoryCollection;
 use App\Http\Resources\V1\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;

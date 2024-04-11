@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers\V1\Backend;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\V1\StoreQuestionRequest;

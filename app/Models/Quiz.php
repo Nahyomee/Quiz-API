@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class Quiz extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category_id', 'user_id', 'title', 'description', 'slug'];
+    protected $fillable = ['category_id', 'user_id', 'title', 'description', 'time', 'slug'];
 
     /**
      * Relationship with question model
@@ -36,6 +37,18 @@ class Quiz extends Model
     public function category() : BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Relationship with submissions model
+     */
+    public function submissions() : HasMany
+    {
+        return $this->hasMany(Submission::class);
+    }
+
+    public function scopePublished(Builder $query) {
+        return $query->where('is_published', 1);
     }
 
       /**

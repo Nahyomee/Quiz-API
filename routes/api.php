@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\V1\QuestionController;
+use App\Http\Controllers\V1\Backend\QuestionController;
 use App\Http\Controllers\V1\AuthController;
-use App\Http\Controllers\V1\CategoryController;
-use App\Http\Controllers\V1\QuizController;
+use App\Http\Controllers\V1\Backend\CategoryController;
+use App\Http\Controllers\V1\Backend\QuizController;
+use App\Http\Controllers\V1\SubmissionController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Resources\V1\UserCollection;
 use App\Models\User;
@@ -52,11 +53,27 @@ Route::prefix('v1')->namespace('App\Http\Controllers\V1')->group(function(){
         });
         Route::post('/logout', 'logout')->middleware('auth:sanctum');
     });
+    Route::get('quizzes', [SubmissionController::class, 'quizzes']);
+    Route::get('quizzes/{quiz}', [SubmissionController::class, 'quiz']);
     Route::middleware('auth:sanctum')->group(function(){
-        Route::apiResources([
-            'categories' => CategoryController::class,
-            'quizzes' => QuizController::class,
-            'quizzes.questions' => QuestionController::class
-        ]);
+        Route::controller(SubmissionController::class)->group(function(){
+            Route::post('quizzes/{quiz}/start', 'startquiz');
+            Route::post('submissions/{submission}/submit', 'submit');
+            Route::get('quizzes/{quiz}/submissions', 'submissions');
+            Route::get('quizzes/{quiz}/submissions/{submission}', 'submission');
+            Route::post('quizzes/{quiz}/submissions/{submission}/end', 'endquiz');
+        });
+        Route::prefix('backend')->group(function(){
+            Route::controller(QuizController::class)->group(function(){
+                Route::post('quizzes/publish', 'publishquiz');
+                Route::post('quizzes/unpublish', 'unpublishquiz');
+            });
+            Route::apiResources([
+                'categories' => CategoryController::class,
+                'quizzes' => QuizController::class,
+                'quizzes.questions' => QuestionController::class
+            ]);
+
+        });
     });
 });

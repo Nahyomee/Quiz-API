@@ -10,12 +10,20 @@ class Answer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['question_id', 'text', 'is_correct'];
+    protected $fillable = ['submission_id', 'question_id', 'answer', 'is_correct'];
     /**
      * Relationship with question model
      */
     public function question() : BelongsTo
     {
         return $this->belongsTo(Question::class);
+    }
+
+    /**
+     * Relationship with submissions model
+     */
+    public function submissions() : BelongsTo
+    {
+        return $this->belongsTo(Submission::class);
     }
 }

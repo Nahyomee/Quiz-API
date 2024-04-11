@@ -20,9 +20,11 @@ class QuizResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'slug' => $this->slug,
+            'time' => $this->time,
             'createdBy' => $this->user->name,
-            'question_count' => $this->whenCounted('questions'),
-            'questions' => QuestionTypeResource::collection($this->questions),
+            'isPublished' => $this->is_published === 1 ? 'yes' : 'no',
+            'questionCount' => $this->whenCounted('questions'),
+            'questions' =>  QuestionTypeResource::collection($this->whenLoaded('questions')),
         ];
     }
 }
