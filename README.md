@@ -2,7 +2,7 @@
 # QUIZ API Using Laravel
 
 ## Description
-This is a RESTFUL API project designed to create quizzes, take quizzes and publish or share your results. I use Laravel (Sanctum) to create it and I'll hopefully make the frontend very soon using Vuejs. This is my first public repo (yay! :smile:) and I hope to be doing more of this.
+This is a RESTFUL API project designed to create quizzes, take quizzes and publish or share your results. I use Laravel (Sanctum) to create it and I'll hopefully make the frontend very soon using Vuejs. 
 
 
 
